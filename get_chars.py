@@ -1,5 +1,12 @@
 import requests
+import csv
+import argparse
 from time import sleep
+
+# Parse command line arguments
+parser = argparse.ArgumentParser(description='Fetch top character tags from e621.net and save to CSV')
+parser.add_argument('output_file', help='Path to the output CSV file')
+args = parser.parse_args()
 
 BASE_URL = "https://e621.net/tags.json"
 HEADERS = {
@@ -25,5 +32,19 @@ for i in range(pages_needed):
 # Keep only the top 1000
 top_1000_tags = all_tags[:1000]
 
-for tag in top_1000_tags:
-    print(f"{tag['name']}: {tag['post_count']} posts")
+# Write to CSV file
+with open(args.output_file, 'w', newline='', encoding='utf-8') as csvfile:
+    fieldnames = ['name', 'post_count']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    
+    # Write header
+    writer.writeheader()
+    
+    # Write data
+    for tag in top_1000_tags:
+        writer.writerow({
+            'name': tag['name'],
+            'post_count': tag['post_count']
+        })
+
+print(f"Successfully saved {len(top_1000_tags)} character tags to {args.output_file}")
