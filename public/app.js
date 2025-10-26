@@ -213,9 +213,6 @@ const Game = () => {
       if (newStreak > bestStreak) {
         setBestStreak(newStreak);
       }
-    } else {
-      setCurrentStreak(0);
-      // Don't immediately show game over, let them see the result first
     }
   };
 
