@@ -140,6 +140,28 @@ const Game = () => {
     localStorage.setItem('e621rdle-best-streak', bestStreak.toString());
   }, [bestStreak]);
 
+  // Update body background color based on game state
+  useEffect(() => {
+    const body = document.body;
+    
+    // Remove any existing answer classes
+    body.classList.remove('correct-answer', 'incorrect-answer');
+    
+    // Add appropriate class when answer is revealed
+    if (gameState === 'revealed' && isCorrect !== null) {
+      if (isCorrect) {
+        body.classList.add('correct-answer');
+      } else {
+        body.classList.add('incorrect-answer');
+      }
+    }
+    
+    // Cleanup function to remove classes when component unmounts
+    return () => {
+      body.classList.remove('correct-answer', 'incorrect-answer');
+    };
+  }, [gameState, isCorrect]);
+
   // Fetch new round data
   const fetchRound = useCallback(async () => {
     setLoading(true);
