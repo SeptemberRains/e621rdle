@@ -134,6 +134,12 @@ body.incorrect-answer .streak-display {
     color: white;
 }
 
+.character-card.grayed-out {
+    background: linear-gradient(135deg, #777, #555);
+    color: #ccc;
+    opacity: 0.6;
+}
+
 .character-image {
     width: 100%;
     height: 200px;

@@ -1,7 +1,7 @@
 const { useState, useEffect, useCallback } = React;
 
 // Character Card Component
-const CharacterCard = ({ character, onClick, revealed, isCorrect, isSelected, disabled }) => {
+const CharacterCard = ({ character, onClick, revealed, isCorrect, isSelected, isGrayedOut, disabled }) => {
   const handleClick = () => {
     if (!disabled && onClick) {
       onClick(character);
@@ -13,7 +13,9 @@ const CharacterCard = ({ character, onClick, revealed, isCorrect, isSelected, di
     if (disabled) classes += ' disabled';
     if (revealed) {
       classes += ' revealed';
-      if (isCorrect !== null) {
+      if (isGrayedOut) {
+        classes += ' grayed-out';
+      } else if (isCorrect !== null) {
         classes += isCorrect ? ' correct' : ' incorrect';
       }
     }
@@ -294,7 +296,8 @@ const Game = () => {
             character={character}
             onClick={handleCharacterSelect}
             revealed={gameState === 'revealed'}
-            isCorrect={gameState === 'revealed' ? character.id === selectedCharacter?.id ? isCorrect : !isCorrect : null}
+            isCorrect={gameState === 'revealed' && character.id === selectedCharacter?.id ? isCorrect : null}
+            isGrayedOut={gameState === 'revealed' && character.id !== selectedCharacter?.id}
             isSelected={selectedCharacter?.id === character.id}
             disabled={gameState !== 'playing'}
           />
