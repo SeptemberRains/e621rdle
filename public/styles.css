@@ -5,20 +5,11 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Verdana', 'Geneva', sans-serif;
+    background: rgb(1, 46, 87);
     min-height: 100vh;
-    color: #333;
+    color: rgb(255, 255, 255);
     transition: background 0.8s ease-in-out;
-}
-
-/* Background color states for correct/incorrect answers */
-body.correct-answer {
-    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-}
-
-body.incorrect-answer {
-    background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
 }
 
 /* Ensure text stays readable on colored backgrounds */
@@ -53,7 +44,7 @@ body.incorrect-answer .streak-display {
 .header h1 {
     font-size: 3rem;
     margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    color: rgb(232, 196, 70);
 }
 
 .header p {
@@ -109,7 +100,7 @@ body.incorrect-answer .streak-display {
 }
 
 .character-card {
-    background: white;
+    background: rgb(31, 60, 103);
     border-radius: 20px;
     padding: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -120,6 +111,7 @@ body.incorrect-answer .streak-display {
     min-width: 300px;
     position: relative;
     overflow: hidden;
+    color: rgb(0, 170, 0);
 }
 
 .character-card:hover {
@@ -169,13 +161,6 @@ body.incorrect-answer .streak-display {
     margin-bottom: 10px;
     text-align: center;
     word-wrap: break-word;
-}
-
-.character-hint {
-    text-align: center;
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 15px;
 }
 
 .post-count {

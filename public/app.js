@@ -37,9 +37,6 @@ const CharacterCard = ({ character, onClick, revealed, isCorrect, isSelected, di
         )}
       </div>
       <div className="character-name">{character.name.replace(/_/g, ' ')}</div>
-      <div className="character-hint">
-        Which character has more posts?
-      </div>
       {revealed && (
         <div className="post-count">
           {character.post_count.toLocaleString()} posts
@@ -264,8 +261,8 @@ const Game = () => {
     return (
       <div className="game-container">
         <div className="header">
-          <h1>E621rdle</h1>
-          <p>Higher or Lower Character Game</p>
+          <h1>e621rdle</h1>
+          <p>Which character has more posts on e621.net?</p>
         </div>
         <StreakDisplay currentStreak={currentStreak} bestStreak={bestStreak} />
         <GameOver 
@@ -284,8 +281,8 @@ const Game = () => {
   return (
     <div className="game-container">
       <div className="header">
-        <h1>E621rdle</h1>
-        <p>Higher or Lower Character Game</p>
+        <h1>e621rdle</h1>
+        <p>Which character has more posts on e621.net?</p>
       </div>
 
       <StreakDisplay currentStreak={currentStreak} bestStreak={bestStreak} />
