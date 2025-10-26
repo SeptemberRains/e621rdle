@@ -101,7 +101,7 @@ const ResultMessage = ({ isCorrect, winner, loser, onNext }) => {
         <div>
           <h3>Wrong! ❌</h3>
           <p>
-            <strong>{winner.name.replace(/_/g, ' ')}</strong> actually has{' '}
+            <strong>{winner.name.replace(/_/g, ' ')}</strong> has{' '}
             <strong>{winner.post_count.toLocaleString()}</strong> posts, while{' '}
             <strong>{loser.name.replace(/_/g, ' ')}</strong> has{' '}
             <strong>{loser.post_count.toLocaleString()}</strong> posts.

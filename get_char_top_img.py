@@ -7,7 +7,7 @@ from time import sleep
 
 SPACE = " "
 
-def find_top_image_url(tag_name):
+def find_top_image_url(tag_name, login=None, api_key=None):
     BASE_URL = "https://e621.net/posts.json"
     HEADERS = {
         "User-Agent": "YourProject/1.0 (by yourusername on e621)"
@@ -16,9 +16,14 @@ def find_top_image_url(tag_name):
     tags_string = SPACE.join(tags)
     params = {
         "tags": tags_string,
-        "limit": 1,
+        "limit": 10,  # Get more posts to check for valid URLs
         "page": 1,
     }
+    
+    # Add login credentials if provided
+    if login and api_key:
+        params["login"] = login
+        params["api_key"] = api_key
     try:
         response = requests.get(BASE_URL, headers=HEADERS, params=params)
         if response.status_code != 200:
@@ -26,19 +31,25 @@ def find_top_image_url(tag_name):
             return ""
         results = response.json().get("posts", [])
         if results:
-            return results[0]["file"]["url"]
+            # Iterate through posts to find one with a valid image URL
+            for i, post in enumerate(results):
+                if "file" in post and post["file"] and post["file"].get("url"):
+                    return post["file"]["url"]
+            # If no valid URLs found
+            print(f"No valid URLs found in {len(results)} posts for {tag_name} (likely all require login)")
+            return ""
         else:
             return ""
     except Exception as e:
         print(f"Exception fetching post for {tag_name}: {e}")
         return ""
 
-def process_character(row, write_lock, writer):
+def process_character(row, write_lock, writer, login=None, api_key=None):
     """Process a single character and write result to CSV"""
     tag_name = row["name"]
     # replace spaces with underscores for tag naming
     tag_query = tag_name.replace(" ", "_")
-    image_url = find_top_image_url(tag_query)
+    image_url = find_top_image_url(tag_query, login=login, api_key=api_key)
     
     # Thread-safe writing
     with write_lock:
@@ -47,7 +58,7 @@ def process_character(row, write_lock, writer):
     
     return tag_name, image_url
 
-def main(input_csv, output_csv, max_workers=10):
+def main(input_csv, output_csv, max_workers=10, login=None, api_key=None):
     """Main function with parallel processing"""
     # Read all rows first
     rows = []
@@ -68,7 +79,7 @@ def main(input_csv, output_csv, max_workers=10):
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             # Submit all tasks
             future_to_row = {
-                executor.submit(process_character, row, write_lock, writer): row 
+                executor.submit(process_character, row, write_lock, writer, login, api_key): row 
                 for row in rows
             }
             
@@ -88,13 +99,29 @@ def main(input_csv, output_csv, max_workers=10):
     print(f"Completed processing {len(rows)} characters!")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3 or len(sys.argv) > 4:
-        print("Usage: python get_char_top_img.py input.csv output.csv [max_workers]")
+    if len(sys.argv) < 3 or len(sys.argv) > 6:
+        print("Usage: python get_char_top_img.py input.csv output.csv [max_workers] [login] [api_key]")
         print("  max_workers: Number of threads (default: 10)")
+        print("  login: e621 username (optional, for accessing login-required posts)")
+        print("  api_key: e621 API key (optional, required if login provided)")
+        print("\nExample:")
+        print("  python get_char_top_img.py chars.csv images.csv 5 myusername myapikey")
         sys.exit(1)
     
     max_workers = 10
-    if len(sys.argv) == 4:
-        max_workers = int(sys.argv[3])
+    login = None
+    api_key = None
     
-    main(sys.argv[1], sys.argv[2], max_workers)
+    if len(sys.argv) >= 4:
+        max_workers = int(sys.argv[3])
+    if len(sys.argv) >= 5:
+        login = sys.argv[4]
+    if len(sys.argv) >= 6:
+        api_key = sys.argv[5]
+    
+    # Validate that both login and api_key are provided together
+    if (login and not api_key) or (api_key and not login):
+        print("Error: Both login and api_key must be provided together")
+        sys.exit(1)
+    
+    main(sys.argv[1], sys.argv[2], max_workers, login, api_key)
