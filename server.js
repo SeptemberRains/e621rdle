@@ -38,17 +38,19 @@ db.serialize(() => {
  * Returns two random characters with different post counts
  */
 app.get('/api/get-round', (req, res) => {
-  // Get two random characters with different post counts
+  // More robust query to ensure different post counts
   const query = `
-    SELECT c1.id, c1.name, c1.post_count, c1.image_url
-    FROM characters c1
-    WHERE c1.id IN (
-      SELECT id FROM characters 
-      ORDER BY RANDOM() 
-      LIMIT 50
+    WITH RandomPair AS (
+      SELECT c1.id as id1, c1.name as name1, c1.post_count as count1, c1.image_url as img1,
+             c2.id as id2, c2.name as name2, c2.post_count as count2, c2.image_url as img2
+      FROM characters c1
+      JOIN characters c2 ON c1.post_count != c2.post_count AND c1.id != c2.id
+      ORDER BY RANDOM()
+      LIMIT 1
     )
-    ORDER BY RANDOM()
-    LIMIT 2
+    SELECT id1 as id, name1 as name, count1 as post_count, img1 as image_url FROM RandomPair
+    UNION ALL
+    SELECT id2 as id, name2 as name, count2 as post_count, img2 as image_url FROM RandomPair
   `;
   
   db.all(query, (err, rows) => {
@@ -58,36 +60,19 @@ app.get('/api/get-round', (req, res) => {
     }
     
     if (rows.length < 2) {
-      return res.status(500).json({ error: 'Not enough characters in database' });
-    }
-    
-    // Ensure characters have different post counts
-    if (rows[0].post_count === rows[1].post_count) {
-      // Try again with a different query to avoid ties
-      const antiTieQuery = `
-        SELECT c1.id, c1.name, c1.post_count, c1.image_url
-        FROM characters c1
-        JOIN characters c2 ON c1.post_count != c2.post_count
-        WHERE c1.id IN (
-          SELECT id FROM characters 
-          ORDER BY RANDOM() 
-          LIMIT 1
-        )
-        AND c2.id IN (
-          SELECT id FROM characters 
-          WHERE post_count != c1.post_count
-          ORDER BY RANDOM() 
-          LIMIT 1
-        )
+      // Fallback to simple random selection if complex query fails
+      const fallbackQuery = `
+        SELECT id, name, post_count, image_url
+        FROM characters 
+        ORDER BY RANDOM() 
         LIMIT 2
       `;
       
-      db.all(antiTieQuery, (err2, rows2) => {
-        if (err2 || rows2.length < 2) {
-          // Fallback: just return the original rows
-          return res.json(rows);
+      db.all(fallbackQuery, (err2, fallbackRows) => {
+        if (err2 || fallbackRows.length < 2) {
+          return res.status(500).json({ error: 'Not enough characters in database' });
         }
-        res.json(rows2);
+        res.json(fallbackRows);
       });
     } else {
       res.json(rows);

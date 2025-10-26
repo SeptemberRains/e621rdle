@@ -1,123 +1,103 @@
-# E621 Character Tags Fetcher
+# E621rdle - Higher or Lower Character Game
 
-A Python script that fetches the top 1000 character tags from e621.net and saves them to a CSV file.
+A web-based game where players guess which of two characters has more posts on e621.net. Test your knowledge of character popularity in this addictive higher-or-lower style game!
 
 ## Features
 
-- Fetches character tags from e621.net API
-- Orders results by post count (most popular first)
-- Saves data to CSV format with customizable output path
-- Respects API rate limiting (1.1 second delay between requests)
-- Command-line interface for easy usage
+- **Higher-or-Lower Gameplay**: Choose which character you think has more posts
+- **Streak Tracking**: Track your current streak and personal best
+- **Beautiful UI**: Modern, responsive design that works on desktop and mobile
+- **Character Images**: Visual cards with character images and names
+- **Persistent Stats**: Your best streak is saved locally
+- **Huge Database**: Over 1000 characters with real post count data
 
-## Requirements
+## Technical Stack
 
-- Python 3.6+
-- `requests` library
+- **Backend**: Node.js with Express.js and SQLite database
+- **Frontend**: React.js (via CDN) with modern CSS
+- **Data**: Character names, post counts, and image URLs from e621.net
 
-## Installation
+## Quick Start
 
-1. Clone or download this repository
-2. Create a virtual environment (recommended):
+1. **Install Dependencies**:
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   npm install
    ```
 
-3. Install dependencies:
+2. **Seed the Database** (if not already done):
    ```bash
-   pip install -r requirements.txt
+   npm run seed
    ```
 
-## Usage
+3. **Start the Server**:
+   ```bash
+   npm start
+   ```
 
-### Basic Usage
+4. **Play the Game**:
+   Visit `http://localhost:3001` in your browser
 
-```bash
-python get_chars.py output.csv
+## Development
+
+### Prerequisites
+
+- Node.js 14+ 
+- NPM or Yarn
+
+### Setup
+
+1. Clone this repository
+2. Install dependencies: `npm install`
+3. Seed the database: `npm run seed`
+4. Start development server: `npm run dev` (uses nodemon for auto-restart)
+
+### Project Structure
+
+```
+e621rdle/
+├── server.js              # Express.js backend server
+├── database.sqlite        # SQLite database (created after seeding)
+├── public/                # Frontend files served statically
+│   ├── index.html        # Main HTML page
+│   ├── app.js            # React application
+│   └── styles.css        # CSS styling
+├── scripts/
+│   └── seed.js           # Database seeding script
+├── characters.csv        # Character names and post counts
+├── top_img.csv          # Character image URLs
+└── package.json         # Node.js dependencies and scripts
 ```
 
-### With Virtual Environment
+## API Endpoints
 
-```bash
-source venv/bin/activate
-python get_chars.py characters.csv
-```
+- `GET /api/get-round` - Returns two random characters with different post counts
+- `GET /api/stats` - Returns database statistics
 
-### Command Line Arguments
+## Game Rules
 
-- `output_file` (required): Path to the output CSV file
+1. Two character cards are displayed
+2. Click on the character you think has more posts
+3. The correct answer is revealed along with both post counts
+4. Correct guesses increase your streak
+5. Wrong guesses end your streak and show game over
+6. Your best streak is saved automatically
 
-### Help
+## Data Sources
 
-```bash
-python get_chars.py --help
-```
+Character data is sourced from e621.net including:
+- Character names and post counts (`characters.csv`)
+- Representative images for each character (`top_img.csv`)
 
-## Output Format
+## Browser Compatibility
 
-The script generates a CSV file with the following columns:
-
-- `name`: The character tag name
-- `post_count`: Number of posts associated with this character
-
-### Example Output
-
-```csv
-name,post_count
-fan_character,154806
-twilight_sparkle_(mlp),38517
-judy_hopps,37810
-fluttershy_(mlp),30834
-rainbow_dash_(mlp),29747
-```
-
-## How It Works
-
-1. **API Request**: The script makes requests to `https://e621.net/tags.json` with parameters:
-   - `search[category]`: 4 (Character tags only)
-   - `search[order]`: "count" (Order by post count)
-   - `limit`: 320 (Maximum results per page)
-
-2. **Pagination**: Fetches multiple pages to get the top 1000 characters (approximately 4 pages)
-
-3. **Rate Limiting**: Includes a 1.1-second delay between requests to respect e621.net's rate limits
-
-4. **Data Processing**: Sorts and limits results to the top 1000 characters by post count
-
-5. **CSV Export**: Writes the results to a CSV file with proper headers and UTF-8 encoding
-
-## API Compliance
-
-- Uses a custom User-Agent header as required by e621.net
-- Respects rate limiting with appropriate delays
-- Only fetches character tags (category 4)
-
-## Error Handling
-
-The script includes basic error handling for:
-- Missing command line arguments
-- File writing permissions
-- Network connectivity issues
-
-## Example Session
-
-```bash
-$ python get_chars.py top_characters.csv
-Successfully saved 1000 character tags to top_characters.csv
-
-$ head -5 top_characters.csv
-name,post_count
-fan_character,154806
-twilight_sparkle_(mlp),38517
-judy_hopps,37810
-fluttershy_(mlp),30834
-```
-
-## License
-
-This script is provided as-is for educational and research purposes. Please respect e621.net's terms of service and API usage guidelines.
+- Modern browsers with ES6+ support
+- Mobile-responsive design
+- Works on iOS Safari, Chrome, Firefox, etc.
 
 ## Contributing
 
-Feel free to submit issues or pull requests to improve the script.
+Feel free to submit issues or pull requests to improve the game!
+
+## License
+
+This project is for educational and entertainment purposes. Please respect e621.net's terms of service.
