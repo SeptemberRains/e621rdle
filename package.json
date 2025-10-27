@@ -8,14 +8,15 @@
     "dev": "nodemon server.js",
     "dev:server": "nodemon server.js",
     "seed": "node scripts/seed.js",
-    "build": "vite build",
+    "build": "vite build && node scripts/verify-build.js",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:unit": "jest --testPathIgnorePatterns=integration",
     "test:integration": "jest --testPathPattern=integration",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "start:production": "NODE_ENV=production node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

@@ -95,10 +95,35 @@ app.get('/api/stats', (req, res) => {
 
 // Serve React app in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('dist'));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-  });
+  // Check if dist folder exists
+  const fs = require('fs');
+  const distPath = path.join(__dirname, 'dist');
+  
+  if (fs.existsSync(distPath)) {
+    app.use(express.static('dist'));
+    app.get('*', (req, res) => {
+      const indexPath = path.join(__dirname, 'dist', 'index.html');
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        res.status(404).send('Frontend build not found. Please ensure the build process completed successfully.');
+      }
+    });
+  } else {
+    // If dist folder doesn't exist, serve a helpful error message
+    app.get('*', (req, res) => {
+      res.status(503).send(`
+        <html>
+          <head><title>Build in Progress</title></head>
+          <body>
+            <h1>Build in Progress</h1>
+            <p>The frontend is being built. Please wait a moment and refresh the page.</p>
+            <p>If this message persists, please check the build logs.</p>
+          </body>
+        </html>
+      `);
+    });
+  }
 }
 
 // Error handling
@@ -111,6 +136,18 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Database location: ${dbPath}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  
+  // Debug information for production
+  if (process.env.NODE_ENV === 'production') {
+    const fs = require('fs');
+    const distPath = path.join(__dirname, 'dist');
+    console.log(`Dist folder exists: ${fs.existsSync(distPath)}`);
+    if (fs.existsSync(distPath)) {
+      const files = fs.readdirSync(distPath);
+      console.log(`Dist folder contents: ${files.join(', ')}`);
+    }
+  }
 });
 
 // Graceful shutdown
