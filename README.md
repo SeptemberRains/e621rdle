@@ -1,6 +1,6 @@
 # E621rdle - Higher or Lower Character Game
 
-A web-based game where players guess which of two characters has more posts on e621.net. Test your knowledge of character popularity in this addictive higher-or-lower style game!
+A modern web-based game where players guess which of two characters has more posts on e621.net. Test your knowledge of character popularity in this addictive higher-or-lower style game!
 
 ## Features
 
@@ -10,11 +10,16 @@ A web-based game where players guess which of two characters has more posts on e
 - **Character Images**: Visual cards with character images and names
 - **Persistent Stats**: Your best streak is saved locally
 - **Huge Database**: Over 1000 characters with real post count data
+- **Type Safety**: Full TypeScript implementation with strict typing
+- **Modern Development**: Hot module replacement and optimized builds
 
 ## Technical Stack
 
-- **Backend**: Node.js with Express.js and SQLite database
-- **Frontend**: React.js (via CDN) with modern CSS
+- **Frontend**: React 18 + TypeScript + Vite
+- **Backend**: Node.js + Express.js + SQLite database
+- **Build System**: Vite with React plugin
+- **Type Safety**: Comprehensive TypeScript definitions
+- **Development**: Hot module replacement, source maps, and type checking
 - **Data**: Character names, post counts, and image URLs from e621.net
 
 ## Quick Start
@@ -29,43 +34,88 @@ A web-based game where players guess which of two characters has more posts on e
    npm run seed
    ```
 
-3. **Start the Server**:
+3. **Start Both Servers**:
    ```bash
+   # Terminal 1 - Backend API Server
+   npm run dev
+   
+   # Terminal 2 - Frontend Development Server
    npm start
    ```
 
 4. **Play the Game**:
-   Visit `http://localhost:3001` in your browser
+   Visit `http://localhost:3000` in your browser
+
+## Development Setup
+
+### Understanding the Commands
+
+- **`npm start`** - Starts the **frontend development server** (Vite)
+  - Runs on `http://localhost:3000/`
+  - Provides hot module replacement for React/TypeScript
+  - Serves the development version with live reloading
+
+- **`npm run dev`** - Starts the **backend API server** (Node.js/Express)
+  - Runs on `http://localhost:3001/`
+  - Serves API endpoints for character data
+  - Uses nodemon for auto-restart on changes
+
+### Why You Need Both
+
+The application uses a **client-server architecture**:
+- **Frontend** (`npm start`) - The game UI that users interact with
+- **Backend** (`npm run dev`) - The API that provides character data from the database
+
+For the best development experience, run both servers simultaneously.
 
 ## Development
 
 ### Prerequisites
 
-- Node.js 14+ 
+- Node.js 18+ 
 - NPM or Yarn
 
-### Setup
+### Available Scripts
 
-1. Clone this repository
-2. Install dependencies: `npm install`
-3. Seed the database: `npm run seed`
-4. Start development server: `npm run dev` (uses nodemon for auto-restart)
+- `npm start` - Start frontend development server (Vite)
+- `npm run dev` - Start backend API server (nodemon)
+- `npm run build` - Build production frontend
+- `npm run preview` - Preview production build
+- `npm run type-check` - Run TypeScript type checking
+- `npm run seed` - Seed the database with character data
 
 ### Project Structure
 
 ```
 e621rdle/
-├── server.js              # Express.js backend server
-├── database.sqlite        # SQLite database (created after seeding)
-├── public/                # Frontend files served statically
-│   ├── index.html        # Main HTML page
-│   ├── app.js            # React application
-│   └── styles.css        # CSS styling
+├── src/                   # Frontend source code (TypeScript/React)
+│   ├── components/        # React components
+│   │   ├── CharacterCard.tsx
+│   │   ├── Game.tsx
+│   │   ├── GameOver.tsx
+│   │   ├── ResultMessage.tsx
+│   │   └── StreakDisplay.tsx
+│   ├── hooks/            # Custom React hooks
+│   │   └── useGameState.ts
+│   ├── services/         # API services
+│   │   └── api.ts
+│   ├── types/            # TypeScript type definitions
+│   │   └── index.ts
+│   ├── utils/            # Utility functions
+│   │   └── gameLogic.ts
+│   ├── App.tsx           # Main App component
+│   ├── App.css           # Styles
+│   └── main.tsx          # Entry point
+├── dist/                 # Built frontend (generated)
+├── server.js             # Express.js backend server
+├── database.sqlite       # SQLite database (created after seeding)
 ├── scripts/
 │   └── seed.js           # Database seeding script
 ├── characters.csv        # Character names and post counts
 ├── top_img.csv          # Character image URLs
-└── package.json         # Node.js dependencies and scripts
+├── package.json         # Dependencies and scripts
+├── tsconfig.json        # TypeScript configuration
+└── vite.config.ts       # Vite configuration
 ```
 
 ## API Endpoints
@@ -87,6 +137,17 @@ e621rdle/
 Character data is sourced from e621.net including:
 - Character names and post counts (`characters.csv`)
 - Representative images for each character (`top_img.csv`)
+
+## Recent Improvements
+
+This project has been completely modernized with:
+
+- ✅ **TypeScript Migration**: Full type safety with strict TypeScript configuration
+- ✅ **Modern Build System**: Vite with React plugin for fast development and optimized builds
+- ✅ **Component Architecture**: Properly separated React components with custom hooks
+- ✅ **Development Experience**: Hot module replacement, source maps, and type checking
+- ✅ **Code Organization**: Clean project structure with proper separation of concerns
+- ✅ **Performance**: Optimized builds with code splitting and asset optimization
 
 ## Browser Compatibility
 
