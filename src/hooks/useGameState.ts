@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Character } from '../components/CharacterCard/CharacterCard.types';
 import { GameState, UseGameStateReturn } from '../components/Game/Game.types';
-import { apiService } from '@/services/api';
+import { apiService, prefetchService } from '@/services';
 import { isCorrectSelection } from '@/utils/gameLogic';
 
 const STORAGE_KEY = 'e621rdle-best-streak';
@@ -60,6 +60,24 @@ export const useGameState = (): UseGameStateReturn => {
     setError(null);
     
     try {
+      // Try to use prefetched data first
+      const prefetchedData = prefetchService.consumePrefetchedData();
+      
+      if (prefetchedData) {
+        setCharacters(prefetchedData);
+        setGameState(GameState.PLAYING);
+        setSelectedCharacter(null);
+        setIsCorrect(null);
+        setLoading(false);
+        
+        // Start prefetching the next round in the background
+        prefetchService.prefetchNextRound().catch(err => 
+          console.warn('Background prefetch failed:', err)
+        );
+        return;
+      }
+      
+      // Fallback to regular API call
       const result = await apiService.getRound();
       
       if (result.error) {
@@ -74,6 +92,11 @@ export const useGameState = (): UseGameStateReturn => {
       setGameState(GameState.PLAYING);
       setSelectedCharacter(null);
       setIsCorrect(null);
+      
+      // Start prefetching the next round in the background
+      prefetchService.prefetchNextRound().catch(err => 
+        console.warn('Background prefetch failed:', err)
+      );
     } catch (err) {
       console.error('Error fetching round:', err);
       setError(err instanceof Error ? err.message : 'Failed to load new round. Please try again.');
@@ -106,6 +129,13 @@ export const useGameState = (): UseGameStateReturn => {
         setBestStreak(newStreak);
       }
     }
+    
+    // Start prefetching the next round while user sees the result
+    if (!prefetchService.hasValidPrefetch()) {
+      prefetchService.prefetchNextRound().catch(err => 
+        console.warn('Background prefetch failed:', err)
+      );
+    }
   }, [gameState, characters, currentStreak, bestStreak]);
 
   // Handle next round or game over
@@ -114,6 +144,13 @@ export const useGameState = (): UseGameStateReturn => {
       fetchRound(); // Start new round
     } else {
       setGameState(GameState.GAME_OVER); // Show game over screen
+      
+      // Prefetch data for potential restart while showing game over
+      if (!prefetchService.hasValidPrefetch()) {
+        prefetchService.prefetchNextRound().catch(err => 
+          console.warn('Background prefetch failed:', err)
+        );
+      }
     }
   }, [isCorrect, fetchRound]);
 

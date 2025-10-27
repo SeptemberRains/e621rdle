@@ -1,12 +1,16 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { Game } from '../../components/Game/Game';
-import { apiService } from '../../services/api';
+import { apiService, prefetchService } from '../../services';
 import { Character } from '../../components/CharacterCard/CharacterCard.types';
 
 // Mock the API service
 jest.mock('../../services/api');
 const mockApiService = apiService as jest.Mocked<typeof apiService>;
+
+// Mock the prefetch service
+jest.mock('../../services/prefetchService');
+const mockPrefetchService = prefetchService as jest.Mocked<typeof prefetchService>;
 
 // Mock localStorage
 const localStorageMock = {
@@ -39,6 +43,11 @@ describe('Game Flow Integration Tests', () => {
     jest.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
     mockApiService.getRound.mockResolvedValue({ data: mockCharacters });
+    
+    // Setup prefetch service mocks to prevent background prefetching
+    mockPrefetchService.consumePrefetchedData.mockReturnValue(null);
+    mockPrefetchService.hasValidPrefetch.mockReturnValue(false);
+    mockPrefetchService.prefetchNextRound.mockResolvedValue(mockCharacters);
   });
 
   describe('Basic Game Play Flow', () => {

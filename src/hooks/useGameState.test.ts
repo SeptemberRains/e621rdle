@@ -1,12 +1,16 @@
 import { renderHook, act } from '@testing-library/react';
 import { useGameState } from './useGameState';
-import { apiService } from '../services/api';
+import { apiService, prefetchService } from '../services';
 import { GameState } from '../components/Game/Game.types';
 import { Character } from '../components/CharacterCard/CharacterCard.types';
 
 // Mock the API service
 jest.mock('../services/api');
 const mockApiService = apiService as jest.Mocked<typeof apiService>;
+
+// Mock the prefetch service
+jest.mock('../services/prefetchService');
+const mockPrefetchService = prefetchService as jest.Mocked<typeof prefetchService>;
 
 // Mock localStorage
 const localStorageMock = {
@@ -38,6 +42,11 @@ describe('useGameState', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
+    
+    // Setup prefetch service mocks
+    mockPrefetchService.consumePrefetchedData.mockReturnValue(null);
+    mockPrefetchService.hasValidPrefetch.mockReturnValue(false);
+    mockPrefetchService.prefetchNextRound.mockResolvedValue(mockCharacters);
   });
 
   describe('initial state', () => {
@@ -365,6 +374,118 @@ describe('useGameState', () => {
 
       expect(document.body.classList.contains('correct-answer')).toBe(false);
       expect(document.body.classList.contains('incorrect-answer')).toBe(false);
+    });
+  });
+
+  describe('prefetching functionality', () => {
+    it('should use prefetched data when available', async () => {
+      mockPrefetchService.consumePrefetchedData.mockReturnValue(mockCharacters);
+      
+      const { result } = renderHook(() => useGameState());
+
+      await act(async () => {
+        await result.current.fetchRound();
+      });
+
+      expect(mockPrefetchService.consumePrefetchedData).toHaveBeenCalled();
+      expect(mockApiService.getRound).not.toHaveBeenCalled();
+      expect(result.current.characters).toEqual(mockCharacters);
+      expect(result.current.loading).toBe(false);
+    });
+
+    it('should fallback to API when no prefetched data', async () => {
+      mockPrefetchService.consumePrefetchedData.mockReturnValue(null);
+      mockApiService.getRound.mockResolvedValue({ data: mockCharacters });
+      
+      const { result } = renderHook(() => useGameState());
+
+      await act(async () => {
+        await result.current.fetchRound();
+      });
+
+      expect(mockPrefetchService.consumePrefetchedData).toHaveBeenCalled();
+      expect(mockApiService.getRound).toHaveBeenCalled();
+      expect(result.current.characters).toEqual(mockCharacters);
+    });
+
+    it('should start prefetching after character selection', async () => {
+      mockApiService.getRound.mockResolvedValue({ data: mockCharacters });
+      mockPrefetchService.hasValidPrefetch.mockReturnValue(false);
+      
+      const { result } = renderHook(() => useGameState());
+
+      await act(async () => {
+        await result.current.fetchRound();
+      });
+
+      await act(() => {
+        result.current.handleCharacterSelect(mockCharacters[1]);
+      });
+
+      expect(mockPrefetchService.prefetchNextRound).toHaveBeenCalled();
+    });
+
+    it('should not prefetch if already has valid prefetch', async () => {
+      mockApiService.getRound.mockResolvedValue({ data: mockCharacters });
+      mockPrefetchService.hasValidPrefetch.mockReturnValue(true);
+      
+      const { result } = renderHook(() => useGameState());
+
+      await act(async () => {
+        await result.current.fetchRound();
+      });
+
+      // Clear the mock calls from fetchRound
+      mockPrefetchService.prefetchNextRound.mockClear();
+
+      await act(() => {
+        result.current.handleCharacterSelect(mockCharacters[1]);
+      });
+
+      expect(mockPrefetchService.prefetchNextRound).not.toHaveBeenCalled();
+    });
+
+    it('should start prefetching when game ends', async () => {
+      mockApiService.getRound.mockResolvedValue({ data: mockCharacters });
+      mockPrefetchService.hasValidPrefetch.mockReturnValue(false);
+      
+      const { result } = renderHook(() => useGameState());
+
+      await act(async () => {
+        await result.current.fetchRound();
+      });
+
+      await act(() => {
+        result.current.handleCharacterSelect(mockCharacters[0]); // Wrong answer
+      });
+
+      await act(() => {
+        result.current.handleNext();
+      });
+
+      expect(result.current.gameState).toBe(GameState.GAME_OVER);
+      expect(mockPrefetchService.prefetchNextRound).toHaveBeenCalled();
+    });
+
+    it('should handle prefetch errors gracefully', async () => {
+      mockApiService.getRound.mockResolvedValue({ data: mockCharacters });
+      mockPrefetchService.prefetchNextRound.mockRejectedValue(new Error('Prefetch failed'));
+      
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      
+      const { result } = renderHook(() => useGameState());
+
+      await act(async () => {
+        await result.current.fetchRound();
+      });
+
+      await act(() => {
+        result.current.handleCharacterSelect(mockCharacters[1]);
+      });
+
+      expect(consoleSpy).toHaveBeenCalledWith('Background prefetch failed:', expect.any(Error));
+      
+      consoleSpy.mockRestore();
     });
   });
 });

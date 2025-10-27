@@ -99,6 +99,12 @@ Optionally, add an index to post_count if sorting or filtering is needed.
 - If incorrect, offer to restart and update best streak if needed.
 - Repeat.
 
+**Performance Optimization:**
+- Implement smart prefetching system to load next round data in background
+- Preload character images to prevent loading delays
+- Cache prefetched data with expiration to ensure freshness
+- Graceful fallback to normal API calls if prefetching fails
+
 ***
 
 ### 6. Robustness & Edge Cases
@@ -107,6 +113,9 @@ Optionally, add an index to post_count if sorting or filtering is needed.
 - Handle insufficient data gracefully.
 - Display placeholder image if image_url is missing.
 - Network error: show a generic error, allow retry.
+- Prefetching failures: gracefully fallback to normal API calls without affecting gameplay.
+- Cache expiration: ensure prefetched data doesn't become stale.
+- Duplicate prefetch requests: prevent multiple simultaneous prefetch operations.
 
 ***
 
@@ -116,6 +125,7 @@ Optionally, add an index to post_count if sorting or filtering is needed.
 - Seed the database with character names, their post counts, and image URLs.
 - Build backend endpoints to fetch and serve two random, distinct characters per request.
 - Construct a minimal frontend that fetches, displays, compares, and scores user input.
+- Implement smart prefetching system for optimal user experience.
 - Optimize for clean code and easy future extension (e.g., additional modes, authentication).
 - Ensure accessibility—all images have alt text from the character name.
 

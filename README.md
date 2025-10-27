@@ -10,6 +10,7 @@ A modern web-based game where players guess which of two characters has more pos
 - **Character Images**: Visual cards with character images and names
 - **Persistent Stats**: Your best streak is saved locally
 - **Huge Database**: Over 1000 characters with real post count data
+- **Smart Prefetching**: Next round data and images are loaded in advance for instant gameplay
 - **Type Safety**: Full TypeScript implementation with strict typing
 - **Modern Development**: Hot module replacement and optimized builds
 
@@ -20,6 +21,7 @@ A modern web-based game where players guess which of two characters has more pos
 - **Build System**: Vite with React plugin
 - **Type Safety**: Comprehensive TypeScript definitions
 - **Development**: Hot module replacement, source maps, and type checking
+- **Performance**: Smart prefetching system for instant round transitions
 - **Data**: Character names, post counts, and image URLs from e621.net
 
 ## Quick Start
@@ -98,7 +100,8 @@ e621rdle/
 │   ├── hooks/            # Custom React hooks
 │   │   └── useGameState.ts
 │   ├── services/         # API services
-│   │   └── api.ts
+│   │   ├── api.ts
+│   │   └── prefetchService.ts
 │   ├── types/            # TypeScript type definitions
 │   │   └── index.ts
 │   ├── utils/            # Utility functions
@@ -132,6 +135,21 @@ e621rdle/
 5. Wrong guesses end your streak and show game over
 6. Your best streak is saved automatically
 
+## Performance Features
+
+### Smart Prefetching System
+
+The game includes an intelligent prefetching system that dramatically improves user experience:
+
+- **Background Loading**: Next round data is fetched while you're viewing current results
+- **Image Preloading**: Character images are loaded in advance to prevent loading delays
+- **Instant Transitions**: New rounds start immediately without waiting for API calls
+- **Cache Management**: Prefetched data expires after 5 minutes to ensure freshness
+- **Error Handling**: Graceful fallback to normal API calls if prefetching fails
+- **Duplicate Prevention**: Multiple prefetch requests are deduplicated automatically
+
+This means faster gameplay, smoother transitions, and a more responsive feel throughout your gaming session.
+
 ## Data Sources
 
 Character data is sourced from e621.net including:
@@ -148,6 +166,7 @@ This project has been completely modernized with:
 - ✅ **Development Experience**: Hot module replacement, source maps, and type checking
 - ✅ **Code Organization**: Clean project structure with proper separation of concerns
 - ✅ **Performance**: Optimized builds with code splitting and asset optimization
+- ✅ **Smart Prefetching**: Next round data and images are prefetched for instant gameplay transitions
 
 ## Browser Compatibility
 
@@ -173,8 +192,9 @@ npm run test:coverage   # With coverage report
 
 **Unit Tests** - Individual components/functions in isolation:
 - `ComponentName.test.tsx` - Component rendering, user interactions
-- `useGameState.test.ts` - Hook state management, localStorage
+- `useGameState.test.ts` - Hook state management, localStorage, prefetching integration
 - `api.test.ts` - API calls, error handling
+- `prefetchService.test.ts` - Prefetching logic, caching, image loading
 - `gameLogic.test.ts` - Pure functions, business logic
 
 **Integration Tests** - Multiple parts working together:
@@ -182,9 +202,10 @@ npm run test:coverage   # With coverage report
 - `gameFlow.integration.test.tsx` - Complete user experience, UI interactions
 
 ### Coverage
-- **136 total tests** (114 unit + 22 integration)
+- **140 total tests** (118 unit + 22 integration)
 - **100% pass rate** with comprehensive error handling
 - TypeScript support with jsdom environment
+- Comprehensive prefetching functionality testing
 
 ## Contributing
 
