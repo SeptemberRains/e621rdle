@@ -155,6 +155,37 @@ This project has been completely modernized with:
 - Mobile-responsive design
 - Works on iOS Safari, Chrome, Firefox, etc.
 
+## Testing
+
+Comprehensive test suite with Jest + React Testing Library.
+
+### Commands
+
+```bash
+npm test                 # Run all tests
+npm run test:unit       # Unit tests only
+npm run test:integration # Integration tests only
+npm run test:watch      # Watch mode
+npm run test:coverage   # With coverage report
+```
+
+### Test Types
+
+**Unit Tests** - Individual components/functions in isolation:
+- `ComponentName.test.tsx` - Component rendering, user interactions
+- `useGameState.test.ts` - Hook state management, localStorage
+- `api.test.ts` - API calls, error handling
+- `gameLogic.test.ts` - Pure functions, business logic
+
+**Integration Tests** - Multiple parts working together:
+- `api.integration.test.ts` - Real API calls, HTTP errors, performance
+- `gameFlow.integration.test.tsx` - Complete user experience, UI interactions
+
+### Coverage
+- **136 total tests** (114 unit + 22 integration)
+- **100% pass rate** with comprehensive error handling
+- TypeScript support with jsdom environment
+
 ## Contributing
 
 Feel free to submit issues or pull requests to improve the game!
