@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { CharacterCardProps } from '@/types';
+import { CharacterCardProps } from './CharacterCard.types';
 import { formatCharacterName, formatPostCount } from '@/utils/gameLogic';
 
 const CardContainer = styled.div<{

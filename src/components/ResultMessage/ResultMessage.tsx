@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ResultMessageProps } from '@/types';
+import { ResultMessageProps } from './ResultMessage.types';
 import { formatCharacterName, formatPostCount } from '@/utils/gameLogic';
 
 const ResultContainer = styled.div<{ isCorrect: boolean }>`

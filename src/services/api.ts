@@ -1,4 +1,4 @@
-import { GetRoundResponse, ApiResponse } from '@/types';
+import { GetRoundResponse, ApiResponse } from '../shared/types';
 
 const API_BASE_URL = '/api';
 

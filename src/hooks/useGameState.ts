@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Character, GameState, UseGameStateReturn } from '@/types';
+import { Character } from '../components/CharacterCard/CharacterCard.types';
+import { GameState, UseGameStateReturn } from '../components/Game/Game.types';
 import { apiService } from '@/services/api';
 import { isCorrectSelection } from '@/utils/gameLogic';
 

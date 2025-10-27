@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import { GameState } from '@/types';
+import { GameState } from './Game.types';
 import { useGameState } from '@/hooks/useGameState';
 import { getWinnerAndLoser } from '@/utils/gameLogic';
-import { CharacterCard } from './CharacterCard';
-import { StreakDisplay } from './StreakDisplay';
-import { GameOver } from './GameOver';
-import { ResultMessage } from './ResultMessage';
+import { CharacterCard } from '../CharacterCard/CharacterCard';
+import { StreakDisplay } from '../StreakDisplay/StreakDisplay';
+import { GameOver } from '../GameOver/GameOver';
+import { ResultMessage } from '../ResultMessage/ResultMessage';
 
 const GameContainer = styled.div`
   max-width: 1200px;

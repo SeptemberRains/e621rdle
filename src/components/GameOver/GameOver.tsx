@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { GameOverProps } from '@/types';
+import { GameOverProps } from './GameOver.types';
 
 const GameOverContainer = styled.div`
   background: rgba(255, 255, 255, 0.1);

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { StreakDisplayProps } from '@/types';
+import { StreakDisplayProps } from './StreakDisplay.types';
 
 const StreakContainer = styled.div`
   background: rgba(255, 255, 255, 0.1);

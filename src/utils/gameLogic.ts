@@ -1,4 +1,4 @@
-import { Character } from '@/types';
+import { Character } from '../components/CharacterCard/CharacterCard.types';
 
 /**
  * Determines if a character selection is correct
